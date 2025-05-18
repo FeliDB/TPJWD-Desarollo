@@ -4,20 +4,31 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { entities } from './entities';
 import { AuthGuard } from './middlewares/auth.middleware';
 import { JwtService } from './jwt/jwt.service';
-import { UsersController } from './users/users.controller';
-import { UsersService } from './users/users.service';
+import { RoleService } from './services/role/role.service';
+import { RoleModule } from './role/role.module';
+import { RoleController } from './controllers/role/role.controller';
+import { UsersController } from './controllers/users/users.controller';
+import { UsersService } from './services/users/users.service';
+import { UsersModule } from './users/users.module';
+import { PermissionsController } from './controllers/permissions/permissions.controller';
+import { PermissionsService } from './services/permissions/permissions.service';
+import { PermissionsModule } from './permissions/permissions.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      database: 'db.sql',
-      entities,
-      type: 'sqlite',
+      type: 'postgres',
+      database: 'usuariosdb',
+      username: 'felipe',
+      password: '12345',
       synchronize: true,
+      entities,
+      port: 5439,
+      host: 'localhost',
     }),
-    TypeOrmModule.forFeature(entities),
+    TypeOrmModule.forFeature(entities) // entidades por cada modulo
   ],
-  controllers: [AppController,UsersController],
-  providers: [AuthGuard, JwtService, UsersService],
+  controllers: [AppController, RoleController, UsersController, PermissionsController],
+  providers: [AuthGuard, JwtService, RoleService, UsersService, PermissionsService],
 })
 export class AppModule {}

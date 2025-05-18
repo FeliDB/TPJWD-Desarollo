@@ -1,17 +1,11 @@
-import { RoleI } from '../interfaces/permission.interface';
+import { PermissionsI } from '../interfaces/permissions.interface';
 import { BaseEntity, Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('permission')
-export class UserEntity extends BaseEntity implements UserI {
+export class PermissionEntity extends BaseEntity implements PermissionsI {
   @PrimaryGeneratedColumn()
   id: number;
-  @Index({unique:true})
+  codigo: string;
   @Column()
-  email: string;
-  @Column()
-  password: string;
-
-  get permissionCodes() {
-    return ['create-users', 'list-products'];
-  }
+  nombre: string;
 }

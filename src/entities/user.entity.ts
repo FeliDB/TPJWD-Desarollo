@@ -1,5 +1,6 @@
 import { UserI } from '../interfaces/user.interface';
-import { BaseEntity, Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, Index, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { RoleEntity } from './roles.entity';
 
 @Entity('users')
 export class UserEntity extends BaseEntity implements UserI {
@@ -10,6 +11,12 @@ export class UserEntity extends BaseEntity implements UserI {
   email: string;
   @Column()
   password: string;
+
+  @OneToOne(() => RoleEntity)
+  @JoinColumn()
+  role: RoleEntity;  // <--- Aquí debe estar definido explícitamente
+  user: UserEntity[];
+
 
   get permissionCodes() {
     return ['create-users', 'list-products'];

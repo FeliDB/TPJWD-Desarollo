@@ -1,13 +1,17 @@
 import { RolesI } from '../interfaces/roles.interface';
-import { BaseEntity, Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, Index, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { UserEntity } from './user.entity';
 
 @Entity('roles')
-export class UserEntity extends BaseEntity implements RolesI {
+export class RoleEntity extends BaseEntity implements RolesI {
+  @PrimaryGeneratedColumn()
+  id: number;
   @Column()
   nombre: string;
   @Column()
   codigo: string;
 
-  
+  @OneToOne(() => UserEntity, user => user.role)
+  user: UserEntity;
 }
 
