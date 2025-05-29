@@ -1,5 +1,6 @@
 import { PermissionsI } from '../interfaces/permissions.interface';
-import { BaseEntity, Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, Index, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { RoleEntity } from './roles.entity';
 
 @Entity('permission')
 export class PermissionEntity extends BaseEntity implements PermissionsI {
@@ -8,4 +9,7 @@ export class PermissionEntity extends BaseEntity implements PermissionsI {
   codigo: string;
   @Column()
   nombre: string;
+
+  @ManyToMany(() => RoleEntity, role => role.id)
+  role: RoleEntity[];
 }

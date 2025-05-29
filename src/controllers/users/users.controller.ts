@@ -7,7 +7,7 @@ export class UsersController {
     constructor (private usersService: UsersService){}
 
     @Permissions('createUser')
-    @Post()
+    @Post('createUsers')
     createUser(@Body() body: any){
         return this.usersService.createUser(body)
     }
@@ -16,6 +16,8 @@ export class UsersController {
     @Post(':id/assignToUser')
     assignToUser(@Param('id') id: number, @Body() body: { roleId: number }) {
     return this.usersService.assignToUser(id, body);
+
+    
   }
 
 }
