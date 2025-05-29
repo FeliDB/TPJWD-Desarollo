@@ -12,4 +12,5 @@ export class PermissionEntity extends BaseEntity implements PermissionsI {
 
   @ManyToMany(() => RoleEntity, role => role.id)
   role: RoleEntity[];
+  //a
 }
