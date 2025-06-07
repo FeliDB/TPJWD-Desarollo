@@ -18,6 +18,7 @@ const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const user_entity_1 = require("../../entities/user.entity");
 const roles_entity_1 = require("../../entities/roles.entity");
+const common_2 = require("@nestjs/common");
 let UsersService = class UsersService {
     constructor(userRepository, roleRepository) {
         this.userRepository = userRepository;
@@ -41,6 +42,15 @@ let UsersService = class UsersService {
         }
         user.role = role;
         return this.userRepository.save(user);
+    }
+    async loginUser(body) {
+        const user = await this.userRepository.findOne({
+            where: { email: body.email },
+        });
+        if (!user || user.password !== body.password) {
+            throw new common_2.UnauthorizedException();
+        }
+        return user;
     }
 };
 exports.UsersService = UsersService;

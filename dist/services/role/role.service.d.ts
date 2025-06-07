@@ -5,4 +5,5 @@ export declare class RoleService {
     userRepository: any;
     constructor(roleRepository: Repository<RoleEntity>);
     createRole(body: any): Promise<RoleEntity[]>;
+    updateRole(body: any): Promise<void>;
 }

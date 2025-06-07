@@ -15,7 +15,7 @@ export class UserEntity extends BaseEntity implements UserI {
   @OneToOne(() => RoleEntity)
   @JoinColumn()
   role: RoleEntity;  // <--- Aquí debe estar definido explícitamente
-  user: UserEntity[];
+  // user: UserEntity[];
 
 
   get permissionCodes() {

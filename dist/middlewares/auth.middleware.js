@@ -31,7 +31,6 @@ let AuthGuard = class AuthGuard {
             const payload = this.jwtService.getPayload(token);
             const user = await this.usersService.findByEmail(payload.email);
             const permissions = this.reflector.get(permissions_decorator_1.Permissions, context.getHandler());
-            console.log(permissions);
             return true;
         }
         catch (error) {

@@ -3,7 +3,7 @@ services:
     image: postgres
     container_name: contenedor
     environment:
-      POSTGRES_USER: felipe
+      POSTGRES_USER: agustin
       POSTGRES_PASSWORD: "12345"
       POSTGRES_DB: usuariosdb
     ports:

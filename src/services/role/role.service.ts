@@ -18,6 +18,8 @@ export class RoleService {
         return this.roleRepository.save(role)
     }
 
+    async updateRole(body:any){}
+
 
 
 }

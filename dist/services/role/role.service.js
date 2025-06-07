@@ -25,6 +25,7 @@ let RoleService = class RoleService {
         const role = this.roleRepository.create(body);
         return this.roleRepository.save(role);
     }
+    async updateRole(body) { }
 };
 exports.RoleService = RoleService;
 exports.RoleService = RoleService = __decorate([

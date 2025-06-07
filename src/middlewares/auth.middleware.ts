@@ -30,7 +30,8 @@ export class AuthGuard implements CanActivate {
       const user = await this.usersService.findByEmail(payload.email);
       //AGREGAR LOGICA PARA USAR LOS PERMISOS QUE VIENEN EN EL DECORADOR
       const permissions = this.reflector.get(Permissions, context.getHandler());
-      console.log(permissions)
+      //sino  throw Error('')
+     
       return true;
     } catch (error) {
       throw new UnauthorizedException(error?.message);

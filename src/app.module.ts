@@ -19,7 +19,7 @@ import { PermissionsModule } from './permissions/permissions.module';
     TypeOrmModule.forRoot({
       type: 'postgres',
       database: 'usuariosdb',
-      username: 'felipe',
+      username: 'agustin',
       password: '12345',
       synchronize: true,
       entities,

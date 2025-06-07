@@ -6,6 +6,5 @@ export declare class UserEntity extends BaseEntity implements UserI {
     email: string;
     password: string;
     role: RoleEntity;
-    user: UserEntity[];
     get permissionCodes(): string[];
 }

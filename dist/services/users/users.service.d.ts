@@ -10,4 +10,5 @@ export declare class UsersService {
     assignToUser(id: number, body: {
         roleId: number;
     }): Promise<UserEntity>;
+    loginUser(body: any): Promise<UserEntity>;
 }

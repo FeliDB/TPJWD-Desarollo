@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PermissionEntity = void 0;
 const typeorm_1 = require("typeorm");
+const roles_entity_1 = require("./roles.entity");
 let PermissionEntity = class PermissionEntity extends typeorm_1.BaseEntity {
 };
 exports.PermissionEntity = PermissionEntity;
@@ -22,6 +23,10 @@ __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", String)
 ], PermissionEntity.prototype, "nombre", void 0);
+__decorate([
+    (0, typeorm_1.ManyToMany)(() => roles_entity_1.RoleEntity, role => role.id),
+    __metadata("design:type", Array)
+], PermissionEntity.prototype, "role", void 0);
 exports.PermissionEntity = PermissionEntity = __decorate([
     (0, typeorm_1.Entity)('permission')
 ], PermissionEntity);
