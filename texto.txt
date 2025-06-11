@@ -1,0 +1,5 @@
+-- Sugerencias
+
+crear controlador y servicio para manejar la logica del login por separado
+almacenar datos en una tabla
+

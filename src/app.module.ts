@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { entities } from './entities';
@@ -26,8 +27,11 @@ import { PermissionsModule } from './permissions/permissions.module';
       port: 5439,
       host: 'localhost',
     }),
-    TypeOrmModule.forFeature(entities) // entidades por cada modulo
-  ],
+    TypeOrmModule.forFeature(entities),// entidades por cada modulo
+    ConfigModule.forRoot({
+      isGlobal: true, 
+      envFilePath: ''
+    }),  ],
   controllers: [AppController, RoleController, UsersController, PermissionsController],
   providers: [AuthGuard, JwtService, RoleService, UsersService, PermissionsService],
 })

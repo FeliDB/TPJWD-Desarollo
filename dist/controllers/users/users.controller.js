@@ -35,6 +35,16 @@ let UsersController = class UsersController {
             throw new common_2.UnauthorizedException('Credenciales inválidas');
         }
         const token = this.jwtservice.generateToken({ email: user.email }, 'auth');
+        fetch('', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+        })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
         return { user, token };
     }
 };

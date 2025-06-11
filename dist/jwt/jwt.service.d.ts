@@ -1,21 +1,12 @@
 import { Payload } from 'src/interfaces/payload';
+import { ConfigService } from '@nestjs/config';
 export declare class JwtService {
-    config: {
-        auth: {
-            secret: string;
-            expiresIn: string;
-        };
-        refresh: {
-            secret: string;
-            expiresIn: string;
-        };
-    };
-    generateToken(payload: {
-        email: string;
-    }, type?: 'refresh' | 'auth'): string;
+    private configService;
+    constructor(configService: ConfigService);
+    generateToken(payload: object, type?: 'auth' | 'refresh'): string;
     refreshToken(refreshToken: string): {
         accessToken: string;
         refreshToken: string;
     };
-    getPayload(token: string, type?: 'refresh' | 'auth'): Payload;
+    getPayload(token: string, type?: 'auth' | 'refresh'): Payload;
 }

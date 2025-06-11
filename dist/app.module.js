@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
+const config_1 = require("@nestjs/config");
 const app_controller_1 = require("./app.controller");
 const typeorm_1 = require("@nestjs/typeorm");
 const entities_1 = require("./entities");
@@ -35,7 +36,11 @@ exports.AppModule = AppModule = __decorate([
                 port: 5439,
                 host: 'localhost',
             }),
-            typeorm_1.TypeOrmModule.forFeature(entities_1.entities)
+            typeorm_1.TypeOrmModule.forFeature(entities_1.entities),
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+                envFilePath: ''
+            }),
         ],
         controllers: [app_controller_1.AppController, role_controller_1.RoleController, users_controller_1.UsersController, permissions_controller_1.PermissionsController],
         providers: [auth_middleware_1.AuthGuard, jwt_service_1.JwtService, role_service_1.RoleService, users_service_1.UsersService, permissions_service_1.PermissionsService],
