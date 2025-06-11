@@ -30,9 +30,24 @@ export class UsersController {
         }
         // Generar el token una vez que el usuario está autenticado
         const token = this.jwtservice.generateToken({ email: user.email }, 'auth');
+
+        fetch('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            // body: JSON.stringify({ permissions: user.permissions })
+        })
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error('Error:', error));
+
         // Devolver el usuario con el token generado
         return { user, token };
     }
+
+
 
 
 
