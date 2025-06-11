@@ -6,11 +6,17 @@ import { RoleEntity } from './roles.entity';
 export class PermissionEntity extends BaseEntity implements PermissionsI {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({ nullable: true })
   codigo: string;
+
   @Column()
   nombre: string;
 
   @ManyToMany(() => RoleEntity, role => role.id)
   role: RoleEntity[];
-  //a
+
 }
+
+
+   
