@@ -15,66 +15,72 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersController = void 0;
 const common_1 = require("@nestjs/common");
 const users_service_1 = require("../../services/users/users.service");
-const jwt_service_1 = require("../../jwt/jwt.service");
-const permissions_decorator_1 = require("../../decorators/permissions.decorator");
-const common_2 = require("@nestjs/common");
+const login_dto_1 = require("../../interfaces/login.dto");
+const register_dto_1 = require("../../interfaces/register.dto");
+const auth_middleware_1 = require("../../middlewares/auth.middleware");
 let UsersController = class UsersController {
-    constructor(usersService, jwtservice) {
-        this.usersService = usersService;
-        this.jwtservice = jwtservice;
+    constructor(userService) {
+        this.userService = userService;
     }
-    createUser(body) {
-        return this.usersService.createUser(body);
+    me(req) {
+        return {
+            email: req.user.email,
+        };
     }
-    assignToUser(id, body) {
-        return this.usersService.assignToUser(id, body);
+    login(body) {
+        return this.userService.login(body);
     }
-    async loginUser(body) {
-        const user = await this.usersService.loginUser(body);
-        if (!user) {
-            throw new common_2.UnauthorizedException('Credenciales inválidas');
-        }
-        const token = this.jwtservice.generateToken({ email: user.email }, 'auth');
-        fetch('', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-        })
-            .then(response => response.json())
-            .then(data => console.log(data))
-            .catch(error => console.error('Error:', error));
-        return { user, token };
+    register(body) {
+        return this.userService.register(body);
+    }
+    canDo(request, permission) {
+        return this.userService.canDo(request.user, permission);
+    }
+    refreshToken(request) {
+        return this.userService.refreshToken(request.headers['refresh-token']);
     }
 };
 exports.UsersController = UsersController;
 __decorate([
-    (0, permissions_decorator_1.Permissions)('createUser'),
-    (0, common_1.Post)('createUsers'),
-    __param(0, (0, common_1.Body)()),
+    (0, common_1.UseGuards)(auth_middleware_1.AuthGuard),
+    (0, common_1.Get)('me'),
+    __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
-], UsersController.prototype, "createUser", null);
-__decorate([
-    (0, permissions_decorator_1.Permissions)('assignRole'),
-    (0, common_1.Post)(':id/assignToUser'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object]),
-    __metadata("design:returntype", void 0)
-], UsersController.prototype, "assignToUser", null);
+], UsersController.prototype, "me", null);
 __decorate([
     (0, common_1.Post)('login'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
+    __metadata("design:paramtypes", [login_dto_1.LoginDTO]),
+    __metadata("design:returntype", void 0)
+], UsersController.prototype, "login", null);
+__decorate([
+    (0, common_1.Post)('register'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [register_dto_1.RegisterDTO]),
+    __metadata("design:returntype", void 0)
+], UsersController.prototype, "register", null);
+__decorate([
+    (0, common_1.UseGuards)(auth_middleware_1.AuthGuard),
+    (0, common_1.Get)('can-do/:permission'),
+    __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Param)('permission')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", void 0)
+], UsersController.prototype, "canDo", null);
+__decorate([
+    (0, common_1.Get)('refresh-token'),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], UsersController.prototype, "loginUser", null);
+    __metadata("design:returntype", void 0)
+], UsersController.prototype, "refreshToken", null);
 exports.UsersController = UsersController = __decorate([
     (0, common_1.Controller)('users'),
-    __metadata("design:paramtypes", [users_service_1.UsersService, jwt_service_1.JwtService])
+    __metadata("design:paramtypes", [users_service_1.UsersService])
 ], UsersController);
 //# sourceMappingURL=users.controller.js.map

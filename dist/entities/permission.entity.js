@@ -29,6 +29,7 @@ __decorate([
 ], PermissionEntity.prototype, "nombre", void 0);
 __decorate([
     (0, typeorm_1.ManyToMany)(() => roles_entity_1.RoleEntity, role => role.id),
+    (0, typeorm_1.JoinTable)(),
     __metadata("design:type", Array)
 ], PermissionEntity.prototype, "role", void 0);
 exports.PermissionEntity = PermissionEntity = __decorate([

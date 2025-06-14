@@ -8,57 +8,89 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersService = void 0;
 const common_1 = require("@nestjs/common");
-const typeorm_1 = require("@nestjs/typeorm");
-const typeorm_2 = require("typeorm");
 const user_entity_1 = require("../../entities/user.entity");
+const bcrypt_1 = require("bcrypt");
+const jwt_service_1 = require("../../jwt/jwt.service");
+const axios_1 = require("axios");
 const roles_entity_1 = require("../../entities/roles.entity");
-const common_2 = require("@nestjs/common");
 let UsersService = class UsersService {
-    constructor(userRepository, roleRepository) {
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
+    constructor(jwtService) {
+        this.jwtService = jwtService;
+        this.repository = user_entity_1.UserEntity;
+        this.roleRepository = roles_entity_1.RoleEntity;
     }
-    findByEmail(email) {
-        throw new Error('Method not implemented.');
+    async refreshToken(refreshToken) {
+        return this.jwtService.refreshToken(refreshToken);
     }
-    async createUser(body) {
-        const user = this.userRepository.create(body);
-        return this.userRepository.save(user);
-    }
-    async assignToUser(id, body) {
-        const user = await this.userRepository.findOne({ where: { id } });
-        if (!user) {
-            throw new common_1.NotFoundException(`User with id ${id} not found`);
+    canDo(user, permission) {
+        const result = user.permissionCodes.includes(permission);
+        if (!result) {
+            throw new common_1.UnauthorizedException();
         }
-        const role = await this.roleRepository.findOne({ where: { id: body.roleId } });
-        if (!role) {
-            throw new common_1.NotFoundException(`Role with id ${body.roleId} not found`);
-        }
-        user.role = role;
-        return this.userRepository.save(user);
+        return true;
     }
-    async loginUser(body) {
-        const user = await this.userRepository.findOne({
-            where: { email: body.email },
+    async register(body) {
+        try {
+            const role = await this.roleRepository.findOne({
+                where: { nombre: body.rol },
+                relations: ['permission'],
+            });
+            const user = new user_entity_1.UserEntity();
+            user.email = body.email;
+            user.password = (0, bcrypt_1.hashSync)(body.password, 10);
+            user.role = role;
+            await this.repository.save(user);
+            return { status: 'created' };
+        }
+        catch (error) {
+            console.error(error);
+            throw new common_1.HttpException('Error de creación', 500);
+        }
+    }
+    async login(body) {
+        const user = await this.findByEmail(body.email);
+        if (user == null) {
+            throw new common_1.UnauthorizedException();
+        }
+        const compareResult = (0, bcrypt_1.compareSync)(body.password, user.password);
+        if (!compareResult) {
+            throw new common_1.UnauthorizedException();
+        }
+        const accessToken = this.jwtService.generateToken({ email: user.email }, 'auth');
+        const refreshToken = this.jwtService.generateToken({ email: user.email }, 'refresh');
+        await this.enviarTokenAOtroBackend(accessToken);
+        return {
+            user,
+            accessToken,
+            refreshToken,
+        };
+    }
+    async enviarTokenAOtroBackend(accessToken) {
+        try {
+            const response = await axios_1.default.get('http://localhost:3001/delivery', {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            console.log('Respuesta del otro backend:', response.data);
+        }
+        catch (error) {
+            console.error('Error al comunicarse con el otro backend:', error.response?.data || error.message);
+        }
+    }
+    async findByEmail(email) {
+        return await this.repository.findOne({
+            where: { email },
+            relations: ['role'],
         });
-        if (!user || user.password !== body.password) {
-            throw new common_2.UnauthorizedException();
-        }
-        return user;
     }
 };
 exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.UserEntity)),
-    __param(1, (0, typeorm_1.InjectRepository)(roles_entity_1.RoleEntity)),
-    __metadata("design:paramtypes", [typeorm_2.Repository,
-        typeorm_2.Repository])
+    __metadata("design:paramtypes", [jwt_service_1.JwtService])
 ], UsersService);
 //# sourceMappingURL=users.service.js.map

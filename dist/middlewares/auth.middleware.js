@@ -13,8 +13,8 @@ exports.AuthGuard = void 0;
 const common_1 = require("@nestjs/common");
 const core_1 = require("@nestjs/core");
 const jwt_service_1 = require("../jwt/jwt.service");
-const users_service_1 = require("../services/users/users.service");
 const permissions_decorator_1 = require("./decorators/permissions.decorator");
+const users_service_1 = require("../services/users/users.service");
 let AuthGuard = class AuthGuard {
     constructor(jwtService, usersService, reflector) {
         this.jwtService = jwtService;
@@ -30,7 +30,9 @@ let AuthGuard = class AuthGuard {
             }
             const payload = this.jwtService.getPayload(token);
             const user = await this.usersService.findByEmail(payload.email);
+            request.user = user;
             const permissions = this.reflector.get(permissions_decorator_1.Permissions, context.getHandler());
+            console.log(permissions);
             return true;
         }
         catch (error) {

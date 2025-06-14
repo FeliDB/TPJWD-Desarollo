@@ -1,62 +1,104 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { UsersController } from 'src/controllers/users/users.controller';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import {
+  HttpException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { LoginDTO } from 'src/interfaces/login.dto';
+import { RegisterDTO } from 'src/interfaces/register.dto';
+import { UserI } from 'src/interfaces/user.interface';
 import { UserEntity } from 'src/entities/user.entity';
-import { RoleEntity } from 'src/entities/roles.entity';
-import { UnauthorizedException } from '@nestjs/common';
+import { hashSync, compareSync } from 'bcrypt';
+import { JwtService } from 'src/jwt/jwt.service';
+import * as dayjs from 'dayjs';
+import axios from 'axios';
+import { RoleEntity } from 'src/entities/roles.entity'
+
 
 @Injectable()
 export class UsersService {
+  repository = UserEntity;
+  roleRepository = RoleEntity;
+  constructor(private jwtService: JwtService) {}
 
-  constructor(
-    @InjectRepository(UserEntity)
-    private userRepository: Repository<UserEntity>,
-
-    @InjectRepository(RoleEntity)   // <--- Falta esta línea
-    private roleRepository: Repository<RoleEntity>
-  ){}
-
-  findByEmail(email: string) {
-    throw new Error('Method not implemented.');
+  async refreshToken(refreshToken: string) {
+    return this.jwtService.refreshToken(refreshToken);
   }
 
-  async createUser(body: any){
-    const user = this.userRepository.create(body)
-    return this.userRepository.save(user)
-  }
-
-  //ASSIGNTOUSER
-  async assignToUser(id: number, body: { roleId: number }) {
-    const user = await this.userRepository.findOne({ where: { id } });
-    if (!user) {
-      throw new NotFoundException(`User with id ${id} not found`);
+  canDo(user: UserI, permission: string): boolean {
+    const result = user.permissionCodes.includes(permission);
+    if (!result) {
+      throw new UnauthorizedException();
     }
-
-    const role = await this.roleRepository.findOne({ where: { id: body.roleId } });
-    if (!role) {
-      throw new NotFoundException(`Role with id ${body.roleId} not found`);
-    }
-
-    user.role = role;
-    return this.userRepository.save(user);
+    return true;
   }
 
-  async loginUser(body: any): Promise<UserEntity> {
-    const user = await this.userRepository.findOne({
-      where: { email: body.email },
+async register(body: RegisterDTO) {
+  try {
+    // Buscar el rol por nombre y traer sus permisos también
+    const role = await this.roleRepository.findOne({
+      where: { nombre: body.rol },
+      relations: ['permission'], // 👈 trae también los permisos del rol
     });
 
-    if (!user || user.password !== body.password) {
+
+    const user = new UserEntity();
+    user.email = body.email;
+    user.password = hashSync(body.password, 10);
+    user.role = role; // 👈 aquí se asigna la entidad Role con permisos incluidos
+
+    await this.repository.save(user);
+
+    return { status: 'created' };
+  } catch (error) {
+    console.error(error);
+    throw new HttpException('Error de creación', 500);
+  }
+}
+
+  async login(body: LoginDTO) {
+    const user = await this.findByEmail(body.email);
+    if (user == null ) {
       throw new UnauthorizedException();
     }
 
-    return user;
+    const compareResult = compareSync(body.password, user.password);
+    if (!compareResult) {
+      throw new UnauthorizedException();
+    }
+
+    const accessToken = this.jwtService.generateToken({ email: user.email }, 'auth');
+    const refreshToken = this.jwtService.generateToken({ email: user.email }, 'refresh');
+
+    await this.enviarTokenAOtroBackend(accessToken);
+
+    return {
+      user,
+      accessToken,
+      refreshToken,
+    };
   }
 
+  async enviarTokenAOtroBackend(accessToken: string) {
+    try {
+      const response = await axios.get('http://localhost:3001/delivery', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      console.log('Respuesta del otro backend:', response.data);
+    } catch (error) {
+      console.error('Error al comunicarse con el otro backend:', error.response?.data || error.message);
+    }
+  }
+
+async findByEmail(email: string): Promise<UserEntity | null> {
+  return await this.repository.findOne({
+    where: { email },
+    relations: ['role'], 
+  });
+}
 
 
 
 }
-
-

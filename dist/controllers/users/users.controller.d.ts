@@ -1,15 +1,25 @@
+import { Request } from 'express';
 import { UsersService } from 'src/services/users/users.service';
-import { JwtService } from 'src/jwt/jwt.service';
+import { LoginDTO } from 'src/interfaces/login.dto';
+import { RegisterDTO } from 'src/interfaces/register.dto';
+import { RequestWithUser } from 'src/interfaces/request-user';
 export declare class UsersController {
-    private usersService;
-    private jwtservice;
-    constructor(usersService: UsersService, jwtservice: JwtService);
-    createUser(body: any): Promise<import("../../entities/user.entity").UserEntity[]>;
-    assignToUser(id: number, body: {
-        roleId: number;
-    }): Promise<import("../../entities/user.entity").UserEntity>;
-    loginUser(body: any): Promise<{
+    private userService;
+    constructor(userService: UsersService);
+    me(req: RequestWithUser): {
+        email: string;
+    };
+    login(body: LoginDTO): Promise<{
         user: import("../../entities/user.entity").UserEntity;
-        token: string;
+        accessToken: string;
+        refreshToken: string;
+    }>;
+    register(body: RegisterDTO): Promise<{
+        status: string;
+    }>;
+    canDo(request: RequestWithUser, permission: string): boolean;
+    refreshToken(request: Request): Promise<{
+        accessToken: string;
+        refreshToken: string;
     }>;
 }

@@ -1,56 +1,59 @@
-import { Body, Controller, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+
+import { Request } from 'express';
 import { UsersService } from 'src/services/users/users.service';
-import { JwtService } from 'src/jwt/jwt.service';
-import { Permissions } from 'src/decorators/permissions.decorator';  // Ajusta ruta según tu proyecto
-import { UnauthorizedException } from '@nestjs/common';
+import { LoginDTO } from 'src/interfaces/login.dto';
+import { RegisterDTO } from 'src/interfaces/register.dto';
+import { AuthGuard } from 'src/middlewares/auth.middleware';
+
+import { RequestWithUser } from 'src/interfaces/request-user';
 
 @Controller('users')
 export class UsersController {
-    constructor (private usersService: UsersService, private jwtservice: JwtService){}
+  constructor(private userService: UsersService) {}
 
-    @Permissions('createUser')
-    @Post('createUsers')
-    createUser(@Body() body: any){
-        return this.usersService.createUser(body)
-    }
+  @UseGuards(AuthGuard)
+  @Get('me')
+  me(@Req() req: RequestWithUser) {
+    return {
+      email: req.user.email,
+    };
+  }
 
-    @Permissions('assignRole')
-    @Post(':id/assignToUser')
-    assignToUser(@Param('id') id: number, @Body() body: { roleId: number }) {
-    return this.usersService.assignToUser(id, body);
-    }
+  @Post('login')
+  login(@Body() body: LoginDTO) {
+    return this.userService.login(body);
+  }
 
-    @Post('login')
-    async loginUser(@Body() body: any) {
-        // Llamar al servicio para autenticar al usuario
-        const user = await this.usersService.loginUser(body);
+  @Post('register')
+  register(@Body() body: RegisterDTO) {
+    return this.userService.register(body);
+  }
 
-        if (!user) {
-            throw new UnauthorizedException('Credenciales inválidas');
-        }
-        // Generar el token una vez que el usuario está autenticado
-        const token = this.jwtservice.generateToken({ email: user.email }, 'auth');
+  @UseGuards(AuthGuard)
+  @Get('can-do/:permission')
+  canDo(
+    @Req() request: RequestWithUser,
+    @Param('permission') permission: string,
+  ) {
+    return this.userService.canDo(request.user, permission);
+  }
 
-        fetch('', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            // body: JSON.stringify({ permissions: user.permissions })
-        })
-            .then(response => response.json())
-            .then(data => console.log(data))
-            .catch(error => console.error('Error:', error));
+  @Get('refresh-token')
+  refreshToken(@Req() request: Request) {
+    return this.userService.refreshToken(
+      request.headers['refresh-token'] as string,
+    );
+  }
+}
 
-        // Devolver el usuario con el token generado
-        return { user, token };
-    }
-
-
-
-
-
- }
 
 

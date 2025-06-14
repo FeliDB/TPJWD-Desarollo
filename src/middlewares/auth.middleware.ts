@@ -9,8 +9,8 @@ import { Request } from 'express';
 import { UserEntity } from 'src/entities/user.entity';
 import { RequestWithUser } from 'src/interfaces/request-user';
 import { JwtService } from 'src/jwt/jwt.service';
-import { UsersService } from 'src/services/users/users.service';
 import { Permissions } from './decorators/permissions.decorator';
+import { UsersService } from 'src/services/users/users.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -28,10 +28,10 @@ export class AuthGuard implements CanActivate {
       }
       const payload = this.jwtService.getPayload(token);
       const user = await this.usersService.findByEmail(payload.email);
+      request.user = user;
       //AGREGAR LOGICA PARA USAR LOS PERMISOS QUE VIENEN EN EL DECORADOR
       const permissions = this.reflector.get(Permissions, context.getHandler());
-      //sino  throw Error('')
-     
+      console.log(permissions)
       return true;
     } catch (error) {
       throw new UnauthorizedException(error?.message);

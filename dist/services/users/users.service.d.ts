@@ -1,14 +1,27 @@
-import { Repository } from 'typeorm';
+import { LoginDTO } from 'src/interfaces/login.dto';
+import { RegisterDTO } from 'src/interfaces/register.dto';
+import { UserI } from 'src/interfaces/user.interface';
 import { UserEntity } from 'src/entities/user.entity';
+import { JwtService } from 'src/jwt/jwt.service';
 import { RoleEntity } from 'src/entities/roles.entity';
 export declare class UsersService {
-    private userRepository;
-    private roleRepository;
-    constructor(userRepository: Repository<UserEntity>, roleRepository: Repository<RoleEntity>);
-    findByEmail(email: string): void;
-    createUser(body: any): Promise<UserEntity[]>;
-    assignToUser(id: number, body: {
-        roleId: number;
-    }): Promise<UserEntity>;
-    loginUser(body: any): Promise<UserEntity>;
+    private jwtService;
+    repository: typeof UserEntity;
+    roleRepository: typeof RoleEntity;
+    constructor(jwtService: JwtService);
+    refreshToken(refreshToken: string): Promise<{
+        accessToken: string;
+        refreshToken: string;
+    }>;
+    canDo(user: UserI, permission: string): boolean;
+    register(body: RegisterDTO): Promise<{
+        status: string;
+    }>;
+    login(body: LoginDTO): Promise<{
+        user: UserEntity;
+        accessToken: string;
+        refreshToken: string;
+    }>;
+    enviarTokenAOtroBackend(accessToken: string): Promise<void>;
+    findByEmail(email: string): Promise<UserEntity | null>;
 }
