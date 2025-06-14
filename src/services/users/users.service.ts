@@ -36,7 +36,7 @@ async register(body: RegisterDTO) {
   try {
     // Buscar el rol por nombre y traer sus permisos también
     const role = await this.roleRepository.findOne({
-      where: { nombre: body.rol },
+      where: { nombre: body.role },
       relations: ['permission'], // 👈 trae también los permisos del rol
     });
 
@@ -44,7 +44,7 @@ async register(body: RegisterDTO) {
     const user = new UserEntity();
     user.email = body.email;
     user.password = hashSync(body.password, 10);
-    user.role = role; // 👈 aquí se asigna la entidad Role con permisos incluidos
+    user.role = role; 
 
     await this.repository.save(user);
 
@@ -57,6 +57,7 @@ async register(body: RegisterDTO) {
 
   async login(body: LoginDTO) {
     const user = await this.findByEmail(body.email);
+    const role = user.role.nombre;
     if (user == null ) {
       throw new UnauthorizedException();
     }
@@ -69,7 +70,7 @@ async register(body: RegisterDTO) {
     const accessToken = this.jwtService.generateToken({ email: user.email }, 'auth');
     const refreshToken = this.jwtService.generateToken({ email: user.email }, 'refresh');
 
-    await this.enviarTokenAOtroBackend(accessToken);
+    await this.enviarTokenAOtroBackend(accessToken, role);
 
     return {
       user,
@@ -78,19 +79,29 @@ async register(body: RegisterDTO) {
     };
   }
 
-  async enviarTokenAOtroBackend(accessToken: string) {
+  async enviarTokenAOtroBackend(accessToken: string, role: string) {
+    // console.log("accessToken",accessToken)
+    // console.log("role",role)
     try {
-      const response = await axios.get('http://localhost:3001/delivery', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+    const response = await axios.get('http://localhost:3001/delivery/findByProximity', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      params: {
+        permissions: role
+      },
+    });
+
 
       console.log('Respuesta del otro backend:', response.data);
     } catch (error) {
-      console.error('Error al comunicarse con el otro backend:', error.response?.data || error.message);
+      console.error(
+        'Error al comunicarse con el otro backend:',
+        error.response?.data || error.message
+      );
     }
   }
+
 
 async findByEmail(email: string): Promise<UserEntity | null> {
   return await this.repository.findOne({

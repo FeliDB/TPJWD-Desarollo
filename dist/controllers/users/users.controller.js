@@ -34,7 +34,7 @@ let UsersController = class UsersController {
         return this.userService.register(body);
     }
     canDo(request, permission) {
-        return this.userService.canDo(request.user, permission);
+        return { user: request.user, permission };
     }
     refreshToken(request) {
         return this.userService.refreshToken(request.headers['refresh-token']);

@@ -13,7 +13,6 @@ exports.AuthGuard = void 0;
 const common_1 = require("@nestjs/common");
 const core_1 = require("@nestjs/core");
 const jwt_service_1 = require("../jwt/jwt.service");
-const permissions_decorator_1 = require("./decorators/permissions.decorator");
 const users_service_1 = require("../services/users/users.service");
 let AuthGuard = class AuthGuard {
     constructor(jwtService, usersService, reflector) {
@@ -22,21 +21,35 @@ let AuthGuard = class AuthGuard {
         this.reflector = reflector;
     }
     async canActivate(context) {
+        console.log("➡️ Entró al AuthGuard");
+        const request = context.switchToHttp().getRequest();
+        const authHeader = request.headers['authorization'];
+        if (!authHeader) {
+            console.error("No se envió Authorization en headers");
+            throw new common_1.UnauthorizedException('No se envió el token');
+        }
+        if (!authHeader.startsWith('Bearer ')) {
+            console.error("Formato incorrecto del token");
+            throw new common_1.UnauthorizedException('Formato de token inválido');
+        }
+        const token = authHeader.replace('Bearer ', '').trim();
+        console.log("token recibido:", token);
         try {
-            const request = context.switchToHttp().getRequest();
-            const token = request.headers.authorization.replace('Bearer ', '');
-            if (token == null) {
-                throw new common_1.UnauthorizedException('El token no existe');
-            }
             const payload = this.jwtService.getPayload(token);
+            console.log("payload decodificado:", payload);
             const user = await this.usersService.findByEmail(payload.email);
+            if (!user) {
+                console.error("usuario no encontrado con email:", payload.email);
+                throw new common_1.UnauthorizedException('Usuario no encontrado');
+            }
             request.user = user;
-            const permissions = this.reflector.get(permissions_decorator_1.Permissions, context.getHandler());
-            console.log(permissions);
+            const permissions = this.reflector.get('permissions', context.getHandler());
+            console.log('Permisos requeridos:', permissions);
             return true;
         }
         catch (error) {
-            throw new common_1.UnauthorizedException(error?.message);
+            console.error("error en AuthGuard:", error.message);
+            throw new common_1.UnauthorizedException('Token inválido o error de autenticación');
         }
     }
 };

@@ -22,6 +22,6 @@ export declare class UsersService {
         accessToken: string;
         refreshToken: string;
     }>;
-    enviarTokenAOtroBackend(accessToken: string): Promise<void>;
+    enviarTokenAOtroBackend(accessToken: string, role: string): Promise<void>;
     findByEmail(email: string): Promise<UserEntity | null>;
 }

@@ -20,21 +20,46 @@ export class AuthGuard implements CanActivate {
     private reflector:Reflector
   ) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    // console.log("➡️ Entró al AuthGuard");
+
+    const request: RequestWithUser = context.switchToHttp().getRequest();
+
+    const authHeader = request.headers['authorization'];
+
+    if (!authHeader) {
+      console.error("No se envió Authorization en headers");
+      throw new UnauthorizedException('No se envió el token');
+    }
+
+    if (!authHeader.startsWith('Bearer ')) {
+      console.error("Formato incorrecto del token");
+      throw new UnauthorizedException('Formato de token inválido');
+    }
+
+    const token = authHeader.replace('Bearer ', '').trim();
+    // console.log("token recibido:", token);
+
     try {
-      const request: RequestWithUser = context.switchToHttp().getRequest();
-      const token = request.headers.authorization.replace('Bearer ','');
-      if (token == null) {
-        throw new UnauthorizedException('El token no existe');
-      }
       const payload = this.jwtService.getPayload(token);
+      // console.log("payload decodificado:", payload);
+
       const user = await this.usersService.findByEmail(payload.email);
+      if (!user) {
+        console.error("usuario no encontrado con email:", payload.email);
+        throw new UnauthorizedException('Usuario no encontrado');
+      }
+
       request.user = user;
-      //AGREGAR LOGICA PARA USAR LOS PERMISOS QUE VIENEN EN EL DECORADOR
-      const permissions = this.reflector.get(Permissions, context.getHandler());
-      console.log(permissions)
+
+      const permissions = this.reflector.get<string[]>('permissions', context.getHandler());
+      // console.log('Permisos requeridos:', permissions);
+
+
       return true;
     } catch (error) {
-      throw new UnauthorizedException(error?.message);
+      console.error("error en AuthGuard:", error.message);
+      throw new UnauthorizedException('Token inválido o error de autenticación');
     }
   }
+
 }

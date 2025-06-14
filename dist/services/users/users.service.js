@@ -35,7 +35,7 @@ let UsersService = class UsersService {
     async register(body) {
         try {
             const role = await this.roleRepository.findOne({
-                where: { nombre: body.rol },
+                where: { nombre: body.role },
                 relations: ['permission'],
             });
             const user = new user_entity_1.UserEntity();
@@ -52,6 +52,7 @@ let UsersService = class UsersService {
     }
     async login(body) {
         const user = await this.findByEmail(body.email);
+        const role = user.role.nombre;
         if (user == null) {
             throw new common_1.UnauthorizedException();
         }
@@ -61,18 +62,21 @@ let UsersService = class UsersService {
         }
         const accessToken = this.jwtService.generateToken({ email: user.email }, 'auth');
         const refreshToken = this.jwtService.generateToken({ email: user.email }, 'refresh');
-        await this.enviarTokenAOtroBackend(accessToken);
+        await this.enviarTokenAOtroBackend(accessToken, role);
         return {
             user,
             accessToken,
             refreshToken,
         };
     }
-    async enviarTokenAOtroBackend(accessToken) {
+    async enviarTokenAOtroBackend(accessToken, role) {
         try {
-            const response = await axios_1.default.get('http://localhost:3001/delivery', {
+            const response = await axios_1.default.get('http://localhost:3001/delivery/findByProximity', {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
+                },
+                params: {
+                    permissions: role
                 },
             });
             console.log('Respuesta del otro backend:', response.data);

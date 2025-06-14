@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  Head,
+  Headers,
   Param,
   Post,
   Req,
@@ -15,6 +17,7 @@ import { RegisterDTO } from 'src/interfaces/register.dto';
 import { AuthGuard } from 'src/middlewares/auth.middleware';
 
 import { RequestWithUser } from 'src/interfaces/request-user';
+import { Permissions } from 'src/middlewares/decorators/permissions.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -44,8 +47,9 @@ export class UsersController {
     @Req() request: RequestWithUser,
     @Param('permission') permission: string,
   ) {
-    return this.userService.canDo(request.user, permission);
+    return { user: request.user, permission };
   }
+
 
   @Get('refresh-token')
   refreshToken(@Req() request: Request) {
