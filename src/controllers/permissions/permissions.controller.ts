@@ -1,5 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { PermissionsService } from 'src/services/permissions/permissions.service';
+import { PermissionsService } from '../../services/permissions/permissions.service';
 
 @Controller('permissions')
 export class PermissionsController {

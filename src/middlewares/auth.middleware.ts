@@ -6,11 +6,11 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
-import { UserEntity } from 'src/entities/user.entity';
-import { RequestWithUser } from 'src/interfaces/request-user';
-import { JwtService } from 'src/jwt/jwt.service';
+import { UserEntity } from '../entities/user.entity';
+import { RequestWithUser } from '../interfaces/request-user';
+import { JwtService } from '../jwt/jwt.service';
 import { Permissions } from './decorators/permissions.decorator';
-import { UsersService } from 'src/services/users/users.service';
+import { UsersService } from '../services/users/users.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -31,11 +31,6 @@ export class AuthGuard implements CanActivate {
       throw new UnauthorizedException('No se envió el token');
     }
 
-    if (!authHeader.startsWith('Bearer ')) {
-      console.error("Formato incorrecto del token");
-      throw new UnauthorizedException('Formato de token inválido');
-    }
-
     const token = authHeader.replace('Bearer ', '').trim();
     // console.log("token recibido:", token);
 
@@ -52,7 +47,7 @@ export class AuthGuard implements CanActivate {
       request.user = user;
 
       const permissions = this.reflector.get<string[]>('permissions', context.getHandler());
-      // console.log('Permisos requeridos:', permissions);
+      console.log('Permisos requeridos:', permissions);
 
 
       return true;

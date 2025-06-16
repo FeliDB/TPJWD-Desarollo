@@ -70,13 +70,13 @@ let UsersService = class UsersService {
         };
     }
     async enviarTokenAOtroBackend(accessToken, role) {
+        console.log("accessToken", accessToken);
+        console.log("role", role);
         try {
             const response = await axios_1.default.get('http://localhost:3001/delivery/findByProximity', {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
-                },
-                params: {
-                    permissions: role
+                    Permissions: role,
                 },
             });
             console.log('Respuesta del otro backend:', response.data);

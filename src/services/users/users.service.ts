@@ -3,15 +3,15 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { LoginDTO } from 'src/interfaces/login.dto';
-import { RegisterDTO } from 'src/interfaces/register.dto';
-import { UserI } from 'src/interfaces/user.interface';
-import { UserEntity } from 'src/entities/user.entity';
+import { LoginDTO } from '../../interfaces/login.dto';
+import { RegisterDTO } from '../../interfaces/register.dto';
+import { UserI } from '../../interfaces/user.interface';
+import { UserEntity } from '../../entities/user.entity';
 import { hashSync, compareSync } from 'bcrypt';
-import { JwtService } from 'src/jwt/jwt.service';
+import { JwtService } from '../../jwt/jwt.service';
 import * as dayjs from 'dayjs';
 import axios from 'axios';
-import { RoleEntity } from 'src/entities/roles.entity'
+import { RoleEntity } from '../../entities/roles.entity'
 
 
 @Injectable()
@@ -80,18 +80,15 @@ async register(body: RegisterDTO) {
   }
 
   async enviarTokenAOtroBackend(accessToken: string, role: string) {
-    // console.log("accessToken",accessToken)
-    // console.log("role",role)
+    console.log("accessToken",accessToken)
+    console.log("role",role)
     try {
-    const response = await axios.get('http://localhost:3001/delivery/findByProximity', {
+   const response = await axios.get('http://localhost:3001/delivery/findByProximity', {
       headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      params: {
-        permissions: role
+        Authorization: `${accessToken}`,
+        Permissions: role, 
       },
     });
-
 
       console.log('Respuesta del otro backend:', response.data);
     } catch (error) {

@@ -11,13 +11,13 @@ import {
 } from '@nestjs/common';
 
 import { Request } from 'express';
-import { UsersService } from 'src/services/users/users.service';
-import { LoginDTO } from 'src/interfaces/login.dto';
-import { RegisterDTO } from 'src/interfaces/register.dto';
-import { AuthGuard } from 'src/middlewares/auth.middleware';
+import { UsersService } from '../../services/users/users.service';
+import { LoginDTO } from '../../interfaces/login.dto';
+import { RegisterDTO } from '../../interfaces/register.dto';
+import { AuthGuard } from '../../middlewares/auth.middleware';
 
-import { RequestWithUser } from 'src/interfaces/request-user';
-import { Permissions } from 'src/middlewares/decorators/permissions.decorator';
+import { RequestWithUser } from '../../interfaces/request-user';
+import { Permissions } from '../../middlewares/decorators/permissions.decorator';
 
 @Controller('users')
 export class UsersController {

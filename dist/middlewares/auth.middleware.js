@@ -21,7 +21,6 @@ let AuthGuard = class AuthGuard {
         this.reflector = reflector;
     }
     async canActivate(context) {
-        console.log("➡️ Entró al AuthGuard");
         const request = context.switchToHttp().getRequest();
         const authHeader = request.headers['authorization'];
         if (!authHeader) {
@@ -33,10 +32,8 @@ let AuthGuard = class AuthGuard {
             throw new common_1.UnauthorizedException('Formato de token inválido');
         }
         const token = authHeader.replace('Bearer ', '').trim();
-        console.log("token recibido:", token);
         try {
             const payload = this.jwtService.getPayload(token);
-            console.log("payload decodificado:", payload);
             const user = await this.usersService.findByEmail(payload.email);
             if (!user) {
                 console.error("usuario no encontrado con email:", payload.email);
@@ -44,7 +41,6 @@ let AuthGuard = class AuthGuard {
             }
             request.user = user;
             const permissions = this.reflector.get('permissions', context.getHandler());
-            console.log('Permisos requeridos:', permissions);
             return true;
         }
         catch (error) {

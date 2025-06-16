@@ -1,7 +1,7 @@
 import { Body, Controller, Param, Post, UseGuards, Put } from '@nestjs/common';
-import { AuthGuard } from 'src/middlewares/auth.middleware';
-import { Permissions } from 'src/middlewares/decorators/permissions.decorator';
-import { RoleService } from 'src/services/role/role.service';
+import { AuthGuard } from '../../middlewares/auth.middleware';
+import { Permissions } from '../../middlewares/decorators/permissions.decorator';
+import { RoleService } from '../../services/role/role.service';
 
 @Controller('role')
 export class RoleController {
