@@ -23,7 +23,7 @@ import { Permissions } from '../../middlewares/decorators/permissions.decorator'
 export class UsersController {
   constructor(private userService: UsersService) {}
 
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   @Get('me')
   me(@Req() req: RequestWithUser) {
     return {

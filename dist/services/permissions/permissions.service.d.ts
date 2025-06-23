@@ -1,5 +1,5 @@
 import { Repository } from 'typeorm';
-import { PermissionEntity } from 'src/entities/permission.entity';
+import { PermissionEntity } from '../../entities/permission.entity';
 export declare class PermissionsService {
     private permissionRepository;
     constructor(permissionRepository: Repository<PermissionEntity>);

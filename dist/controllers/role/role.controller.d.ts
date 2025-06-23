@@ -1,4 +1,4 @@
-import { RoleService } from 'src/services/role/role.service';
+import { RoleService } from '../../services/role/role.service';
 export declare class RoleController {
     private roleService;
     constructor(roleService: RoleService);

@@ -1,9 +1,9 @@
-import { LoginDTO } from 'src/interfaces/login.dto';
-import { RegisterDTO } from 'src/interfaces/register.dto';
-import { UserI } from 'src/interfaces/user.interface';
-import { UserEntity } from 'src/entities/user.entity';
-import { JwtService } from 'src/jwt/jwt.service';
-import { RoleEntity } from 'src/entities/roles.entity';
+import { LoginDTO } from '../../interfaces/login.dto';
+import { RegisterDTO } from '../../interfaces/register.dto';
+import { UserI } from '../../interfaces/user.interface';
+import { UserEntity } from '../../entities/user.entity';
+import { JwtService } from '../../jwt/jwt.service';
+import { RoleEntity } from '../../entities/roles.entity';
 export declare class UsersService {
     private jwtService;
     repository: typeof UserEntity;

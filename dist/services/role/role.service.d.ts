@@ -1,5 +1,5 @@
 import { Repository } from 'typeorm';
-import { RoleEntity } from 'src/entities/roles.entity';
+import { RoleEntity } from '../../entities/roles.entity';
 export declare class RoleService {
     private roleRepository;
     userRepository: any;

@@ -1,4 +1,4 @@
-import { PermissionsService } from 'src/services/permissions/permissions.service';
+import { PermissionsService } from '../../services/permissions/permissions.service';
 export declare class PermissionsController {
     private permissionsService;
     constructor(permissionsService: PermissionsService);

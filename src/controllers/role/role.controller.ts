@@ -7,7 +7,7 @@ import { RoleService } from '../../services/role/role.service';
 export class RoleController {
     constructor (private roleService: RoleService){}
 
-    @UseGuards(AuthGuard)
+    // @UseGuards(AuthGuard)
     @Permissions(['create_role'])
     @Post()
     postRole(@Body() body: any){
