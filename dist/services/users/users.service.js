@@ -75,7 +75,7 @@ let UsersService = class UsersService {
         try {
             const response = await axios_1.default.get('http://localhost:3001/delivery/findByProximity', {
                 headers: {
-                    Authorization: `Bearer ${accessToken}`,
+                    Authorization: `${accessToken}`,
                     Permissions: role,
                 },
             });

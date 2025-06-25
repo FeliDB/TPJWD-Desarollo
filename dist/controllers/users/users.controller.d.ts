@@ -1,8 +1,8 @@
 import { Request } from 'express';
-import { UsersService } from 'src/services/users/users.service';
-import { LoginDTO } from 'src/interfaces/login.dto';
-import { RegisterDTO } from 'src/interfaces/register.dto';
-import { RequestWithUser } from 'src/interfaces/request-user';
+import { UsersService } from '../../services/users/users.service';
+import { LoginDTO } from '../../interfaces/login.dto';
+import { RegisterDTO } from '../../interfaces/register.dto';
+import { RequestWithUser } from '../../interfaces/request-user';
 export declare class UsersController {
     private userService;
     constructor(userService: UsersService);

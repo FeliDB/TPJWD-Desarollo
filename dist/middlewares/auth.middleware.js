@@ -27,10 +27,6 @@ let AuthGuard = class AuthGuard {
             console.error("No se envió Authorization en headers");
             throw new common_1.UnauthorizedException('No se envió el token');
         }
-        if (!authHeader.startsWith('Bearer ')) {
-            console.error("Formato incorrecto del token");
-            throw new common_1.UnauthorizedException('Formato de token inválido');
-        }
         const token = authHeader.replace('Bearer ', '').trim();
         try {
             const payload = this.jwtService.getPayload(token);
@@ -41,6 +37,7 @@ let AuthGuard = class AuthGuard {
             }
             request.user = user;
             const permissions = this.reflector.get('permissions', context.getHandler());
+            console.log('Permisos requeridos:', permissions);
             return true;
         }
         catch (error) {

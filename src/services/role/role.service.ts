@@ -12,6 +12,11 @@ export class RoleService {
         private roleRepository: Repository<RoleEntity>
     ){ }
 
+    //GET
+    async getRole(){
+        return this.roleRepository.find()
+    }
+
     //POST
     async createRole(body: any){
         const role = this.roleRepository.create(body)
