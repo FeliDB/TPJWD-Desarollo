@@ -1,5 +1,4 @@
 import { LoginDTO } from '../../interfaces/login.dto';
-import { RegisterDTO } from '../../interfaces/register.dto';
 import { UserI } from '../../interfaces/user.interface';
 import { UserEntity } from '../../entities/user.entity';
 import { JwtService } from '../../jwt/jwt.service';
@@ -14,7 +13,7 @@ export declare class UsersService {
         refreshToken: string;
     }>;
     canDo(user: UserI, permission: string): boolean;
-    register(body: RegisterDTO): Promise<{
+    register(body: any): Promise<{
         status: string;
     }>;
     login(body: LoginDTO): Promise<{
@@ -24,4 +23,5 @@ export declare class UsersService {
     }>;
     enviarTokenAOtroBackend(accessToken: string, role: string): Promise<void>;
     findByEmail(email: string): Promise<UserEntity | null>;
+    existsUsers(email: string): Promise<boolean>;
 }

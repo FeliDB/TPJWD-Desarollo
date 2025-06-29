@@ -57,6 +57,11 @@ export class UsersController {
       request.headers['refresh-token'] as string,
     );
   }
+
+  @Post('existsUsers')
+  existsUsers(@Body() body: { email: string }) {
+    return this.userService.existsUsers(body.email);
+  }
 }
 
 

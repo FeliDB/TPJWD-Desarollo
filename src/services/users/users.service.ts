@@ -32,28 +32,33 @@ export class UsersService {
     return true;
   }
 
-async register(body: RegisterDTO) {
-  try {
-    // Buscar el rol por nombre y traer sus permisos también
-    const role = await this.roleRepository.findOne({
-      where: { nombre: body.role },
-      relations: ['permission'], // 👈 trae también los permisos del rol
-    });
+  async register(body) {
+    try {
+      console.log("body", body)
+      console.log("body.role", body.rol)
+
+      // Buscar el rol por nombre y traer sus permisos también
+      const role = await this.roleRepository.findOne({
+        where: { nombre: body.rol },
+        relations: ['permission'], // 👈 trae también los permisos del rol
+      });
+
+      console.log("role", role)
 
 
-    const user = new UserEntity();
-    user.email = body.email;
-    user.password = hashSync(body.password, 10);
-    user.role = role; 
+      const user = new UserEntity();
+      user.email = body.email;
+      user.password = hashSync(body.password, 10);
+      user.role = role; 
 
-    await this.repository.save(user);
+      await this.repository.save(user);
 
-    return { status: 'created' };
-  } catch (error) {
-    console.error(error);
-    throw new HttpException('Error de creación', 500);
+      return { status: 'created' };
+    } catch (error) {
+      console.error(error);
+      throw new HttpException('Error de creación', 500);
+    }
   }
-}
 
   async login(body: LoginDTO) {
     const user = await this.findByEmail(body.email);
@@ -100,13 +105,17 @@ async register(body: RegisterDTO) {
   }
 
 
-async findByEmail(email: string): Promise<UserEntity | null> {
-  return await this.repository.findOne({
-    where: { email },
-    relations: ['role'], 
-  });
-}
+  async findByEmail(email: string): Promise<UserEntity | null> {
+    return await this.repository.findOne({
+      where: { email },
+      relations: ['role'], 
+    });
+  }
 
+  async existsUsers(email: string): Promise<boolean> {
+    const user = await this.repository.findOne({ where: { email } });
+    return user !== null;
+  }
 
 
 }
