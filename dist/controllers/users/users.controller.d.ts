@@ -25,4 +25,7 @@ export declare class UsersController {
         accessToken: string;
         refreshToken: string;
     }>;
+    existsUsers(body: {
+        email: string;
+    }): Promise<boolean>;
 }

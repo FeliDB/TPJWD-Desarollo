@@ -21,6 +21,9 @@ let RoleService = class RoleService {
     constructor(roleRepository) {
         this.roleRepository = roleRepository;
     }
+    async getRole() {
+        return this.roleRepository.find();
+    }
     async createRole(body) {
         const role = this.roleRepository.create(body);
         return this.roleRepository.save(role);

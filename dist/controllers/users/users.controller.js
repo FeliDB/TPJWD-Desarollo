@@ -39,9 +39,13 @@ let UsersController = class UsersController {
     refreshToken(request) {
         return this.userService.refreshToken(request.headers['refresh-token']);
     }
+    existsUsers(body) {
+        return this.userService.existsUsers(body.email);
+    }
 };
 exports.UsersController = UsersController;
 __decorate([
+    (0, common_1.UseGuards)(auth_middleware_1.AuthGuard),
     (0, common_1.Get)('me'),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
@@ -78,6 +82,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "refreshToken", null);
+__decorate([
+    (0, common_1.Post)('existsUsers'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], UsersController.prototype, "existsUsers", null);
 exports.UsersController = UsersController = __decorate([
     (0, common_1.Controller)('users'),
     __metadata("design:paramtypes", [users_service_1.UsersService])

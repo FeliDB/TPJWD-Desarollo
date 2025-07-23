@@ -23,7 +23,7 @@ import { Permissions } from '../../middlewares/decorators/permissions.decorator'
 export class UsersController {
   constructor(private userService: UsersService) {}
 
-  // @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard)
   @Get('me')
   me(@Req() req: RequestWithUser) {
     return {
@@ -56,6 +56,11 @@ export class UsersController {
     return this.userService.refreshToken(
       request.headers['refresh-token'] as string,
     );
+  }
+
+  @Post('existsUsers')
+  existsUsers(@Body() body: { email: string }) {
+    return this.userService.existsUsers(body.email);
   }
 }
 

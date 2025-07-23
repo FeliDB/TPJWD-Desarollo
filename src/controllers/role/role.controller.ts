@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, UseGuards, Put } from '@nestjs/common';
+import { Body, Controller, Param, Post, UseGuards, Put, Get } from '@nestjs/common';
 import { AuthGuard } from '../../middlewares/auth.middleware';
 import { Permissions } from '../../middlewares/decorators/permissions.decorator';
 import { RoleService } from '../../services/role/role.service';
@@ -7,7 +7,12 @@ import { RoleService } from '../../services/role/role.service';
 export class RoleController {
     constructor (private roleService: RoleService){}
 
-    // @UseGuards(AuthGuard)
+    @Get()
+    getRole() {
+        return this.roleService.getRole();
+    }
+
+    @UseGuards(AuthGuard)
     @Permissions(['create_role'])
     @Post()
     postRole(@Body() body: any){

@@ -34,10 +34,13 @@ let UsersService = class UsersService {
     }
     async register(body) {
         try {
+            console.log("body", body);
+            console.log("body.role", body.rol);
             const role = await this.roleRepository.findOne({
-                where: { nombre: body.role },
+                where: { nombre: body.rol },
                 relations: ['permission'],
             });
+            console.log("role", role);
             const user = new user_entity_1.UserEntity();
             user.email = body.email;
             user.password = (0, bcrypt_1.hashSync)(body.password, 10);
@@ -90,6 +93,10 @@ let UsersService = class UsersService {
             where: { email },
             relations: ['role'],
         });
+    }
+    async existsUsers(email) {
+        const user = await this.repository.findOne({ where: { email } });
+        return user !== null;
     }
 };
 exports.UsersService = UsersService;
