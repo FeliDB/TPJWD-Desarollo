@@ -1,7 +1,6 @@
 services:
   db:
     image: postgres
-    container_name: contenedor
     environment:
       POSTGRES_USER: agustin
       POSTGRES_PASSWORD: "12345"
